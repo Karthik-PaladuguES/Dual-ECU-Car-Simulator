@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NUCLEO-F401RE — Physical Connection Guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0b0e18;color:#c8d8f0;font-family:'Segoe UI',sans-serif;font-size:13px;line-height:1.6}
+header{background:linear-gradient(135deg,#0d1627,#0a1a30);border-bottom:2px solid #00d4ff;padding:20px 28px}
+h1{font-size:24px;font-weight:900;color:#fff}h1 span{color:#00d4ff}
+.sub{font-size:12px;color:#4a6080;margin-top:3px}
+.badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.badge{font-size:11px;padding:2px 10px;border-radius:3px;border:1px solid;font-family:monospace}
+.b1{color:#00d4ff;border-color:#00d4ff;background:rgba(0,212,255,.07)}
+.b2{color:#f0a500;border-color:#f0a500;background:rgba(240,165,0,.07)}
+.b3{color:#00ff9d;border-color:#00ff9d;background:rgba(0,255,157,.07)}
+.b4{color:#ff4e6a;border-color:#ff4e6a;background:rgba(255,78,106,.07)}
+main{max-width:1440px;margin:auto;padding:20px 14px 60px}
+.sh{display:flex;align-items:center;gap:10px;margin:28px 0 12px}
+.sn{font-size:10px;color:#f0a500;background:rgba(240,165,0,.1);border:1px solid #f0a500;padding:2px 8px;border-radius:2px;font-family:monospace}
+.sh h2{font-size:15px;font-weight:700;color:#fff}
+.div{flex:1;height:1px;background:#1e2d4a}
+.warn{background:rgba(240,165,0,.07);border:1px solid rgba(240,165,0,.3);border-left:3px solid #f0a500;border-radius:6px;padding:10px 14px;margin:12px 0;font-size:12px}
+.warn strong{color:#f0a500}
+.ok{background:rgba(0,255,157,.05);border:1px solid rgba(0,255,157,.2);border-left:3px solid #00ff9d;border-radius:6px;padding:10px 14px;margin:12px 0;font-size:12px;color:#c8d8f0}
+.ok strong{color:#00ff9d}
+
+/* ── BOARD DIAGRAM ── */
+.board-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:16px 0}
+@media(max-width:900px){.board-wrap{grid-template-columns:1fr}}
+.board{background:#111623;border:1px solid #1e2d4a;border-radius:10px;overflow:hidden}
+.board-title{padding:10px 16px;font-size:13px;font-weight:700;color:#fff;border-bottom:1px solid #1e2d4a;display:flex;align-items:center;gap:8px}
+.e1t{background:linear-gradient(90deg,rgba(0,212,255,.1),transparent)}
+.e2t{background:linear-gradient(90deg,rgba(0,255,157,.1),transparent)}
+.header-row{display:grid;grid-template-columns:110px 1fr 80px 90px;gap:4px;padding:5px 12px;background:rgba(0,0,0,.3);border-bottom:1px solid #1e2d4a;font-size:10px;color:#4a6080;font-family:monospace;letter-spacing:1px;text-transform:uppercase}
+.pin-row{display:grid;grid-template-columns:110px 1fr 80px 90px;gap:4px;padding:4px 12px;border-bottom:1px solid rgba(30,45,74,.3);align-items:center}
+.pin-row:last-child{border:none}
+.pin-row:hover{background:rgba(255,255,255,.02)}
+.dlabel{font-family:monospace;font-size:11px;font-weight:700;padding:2px 6px;border-radius:3px;text-align:center;white-space:nowrap}
+.d-used{color:#f0a500;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.25)}
+.d-uart{color:#ff4e6a;background:rgba(255,78,106,.1);border:1px solid rgba(255,78,106,.3)}
+.d-pwr{color:#60a5fa;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25)}
+.d-free{color:#3a5070;background:rgba(30,45,74,.3);border:1px solid #1e2d4a}
+.d-gnd{color:#6ee7b7;background:rgba(110,231,183,.08);border:1px solid rgba(110,231,183,.2)}
+.comp-name{font-size:12px;color:#c8d8f0}
+.comp-note{font-size:10px;color:#4a6080}
+.itype{font-size:10px;font-family:monospace;padding:1px 5px;border-radius:2px}
+.iadc{color:#a78bfa;background:rgba(167,139,250,.1)}
+.igpio{color:#6ee7b7;background:rgba(110,231,183,.1)}
+.ipwm{color:#fbbf24;background:rgba(251,191,36,.1)}
+.iuart{color:#f87171;background:rgba(248,113,113,.1)}
+.iir{color:#f472b6;background:rgba(244,114,182,.1)}
+
+/* ── WIRING STEPS ── */
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.wcard{background:#111623;border:1px solid #1e2d4a;border-radius:8px;overflow:hidden}
+.wch{background:rgba(0,0,0,.25);padding:9px 14px;border-bottom:1px solid #1e2d4a;display:flex;align-items:center;gap:8px}
+.wct{font-size:12px;font-weight:700;color:#fff}
+.wcb{padding:10px 14px}
+.ws{display:flex;gap:6px;padding:4px 0;border-bottom:1px solid rgba(30,45,74,.3);align-items:flex-start;font-size:12px}
+.ws:last-child{border:none}
+.wfrom{font-family:monospace;font-size:11px;font-weight:700;color:#f0a500;min-width:90px;background:rgba(240,165,0,.06);padding:1px 6px;border-radius:3px;white-space:nowrap}
+.wto{color:#c8d8f0}
+.warr{color:#4a6080;padding:0 2px}
+
+/* ── UART LINK ── */
+.uart-box{background:#0a1a0f;border:2px solid #00ff9d;border-radius:8px;padding:16px 20px;margin:12px 0}
+.uart-box h3{color:#00ff9d;font-size:13px;margin-bottom:10px;font-family:monospace}
+.uwire{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(0,255,157,.1)}
+.uwire:last-child{border:none}
+.upin{font-family:monospace;font-size:12px;font-weight:700;color:#f0a500;padding:2px 10px;border-radius:3px;background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.3);min-width:120px;text-align:center}
+.uarr{color:#00ff9d;font-size:15px;font-weight:700;min-width:100px;text-align:center}
+.udesc{font-size:11px;color:#c8d8f0}
+
+/* ── IO TABLE ── */
+.iotable{width:100%;border-collapse:collapse;background:#111623;border-radius:8px;overflow:hidden;border:1px solid #1e2d4a}
+.iotable th{font-size:10px;font-family:monospace;text-transform:uppercase;letter-spacing:1px;color:#4a6080;padding:8px 12px;text-align:left;border-bottom:1px solid #1e2d4a;background:rgba(0,0,0,.25)}
+.iotable td{padding:6px 12px;border-bottom:1px solid rgba(30,45,74,.35);font-size:12px}
+.iotable tr:last-child td{border:none}
+.iotable tr:hover td{background:rgba(255,255,255,.02)}
+.ok-cell{color:#00ff9d;font-weight:700}
+
+footer{text-align:center;padding:18px;color:#4a6080;font-size:11px;font-family:monospace;border-top:1px solid #1e2d4a;margin-top:30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>NUCLEO-<span>F401RE</span> — Physical Connection Guide</h1>
+  <div class="sub">Car Simulator · ECU1 (Control System) + ECU2 (Actuator System) · UART D8/D2 Link</div>
+  <div class="badges">
+    <span class="badge b1">STM32F401RE Nucleo-64</span>
+    <span class="badge b2">UART 57600 baud on D8/D2</span>
+    <span class="badge b3">Code confirmed compatible</span>
+    <span class="badge b4">IRremote v3 library</span>
+  </div>
+</header>
+<main>
+
+<div class="ok"><strong>✅ Code Compatibility:</strong> Yes — the code is fully compatible with this exact board (NUCLEO-F401RE / NUF401RESAU1). All pins used exist on this board's CN5/CN6/CN7/CN10 headers. The board you photographed is correct.</div>
+
+<!-- ═══ UART LINK ═══ -->
+<div class="sh"><span class="sn">01</span><h2>UART Link — 3 Wires Between Both Boards</h2><div class="div"></div></div>
+<div class="uart-box">
+  <h3>CROSS-CONNECT the two Nucleo boards exactly like this:</h3>
+  <div class="uwire">
+    <span class="upin">ECU1  D8 (PA9)</span>
+    <span class="uarr">TX ──────→</span>
+    <span class="upin">ECU2  D2 (PA10)</span>
+    <span class="udesc" style="margin-left:10px">ECU1 transmits → ECU2 receives</span>
+  </div>
+  <div class="uwire">
+    <span class="upin">ECU1  D2 (PA10)</span>
+    <span class="uarr">RX ←──────</span>
+    <span class="upin">ECU2  D8 (PA9)</span>
+    <span class="udesc" style="margin-left:10px">ECU2 transmits → ECU1 receives</span>
+  </div>
+  <div class="uwire">
+    <span class="upin">ECU1  GND</span>
+    <span class="uarr">GND ──────</span>
+    <span class="upin">ECU2  GND</span>
+    <span class="udesc" style="margin-left:10px;color:#ff4e6a;font-weight:700">⚠ CRITICAL — NO GND = NO UART</span>
+  </div>
+</div>
+<div class="warn"><strong>📍 Physical location on board:</strong> D8 and D2 are on the RIGHT-SIDE header (CN10) of the Nucleo board — the long connector on the right when USB is at the top-left. D8 is near the middle, D2 is near the top-right of that header.</div>
+
+<!-- ═══ ECU1 BOARD MAP ═══ -->
+<div class="sh"><span class="sn">02</span><h2>ECU #1 — Control System — All Pin Connections</h2><div class="div"></div></div>
+<div class="board-wrap">
+<div class="board">
+  <div class="board-title e1t">🔵 ECU #1 — CN10 (Right Header — Digital Pins)</div>
+  <div class="header-row"><span>BOARD LABEL</span><span>CONNECT TO</span><span>STM32</span><span>TYPE</span></div>
+  <div class="pin-row"><span class="dlabel d-pwr">3V3</span><span><div class="comp-name">Joystick VCC, Pot VCC, IR VCC</div><div class="comp-note">All 3.3V powered sensors</div></span><span style="color:#60a5fa;font-size:11px">3.3V rail</span><span><span class="itype ipwm">POWER</span></span></div>
+  <div class="pin-row"><span class="dlabel d-gnd">GND</span><span><div class="comp-name">Common GND for all components</div><div class="comp-note">Also cross-wire to ECU2 GND</div></span><span style="color:#6ee7b7;font-size:11px">GND</span><span><span class="itype igpio">GND</span></span></div>
+  <div class="pin-row"><span class="dlabel d-uart">D8</span><span><div class="comp-name">→ ECU2 D2 (UART TX out)</div><div class="comp-note">Cross-connect wire to other board</div></span><span style="color:#f0a500;font-size:11px">PA9</span><span><span class="itype iuart">UART TX</span></span></div>
+  <div class="pin-row"><span class="dlabel d-uart">D2</span><span><div class="comp-name">← ECU2 D8 (UART RX in)</div><div class="comp-note">Cross-connect wire to other board</div></span><span style="color:#f0a500;font-size:11px">PA10</span><span><span class="itype iuart">UART RX</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D7</span><span><div class="comp-name">Ultrasonic TRIG (HC-SR04)</div><div class="comp-note">Direct wire, 3.3V signal OK</div></span><span style="color:#f0a500;font-size:11px">PB10</span><span><span class="itype igpio">GPIO OUT</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D6</span><span><div class="comp-name">Ultrasonic ECHO (HC-SR04)</div><div class="comp-note">⚠ Use 1kΩ+2kΩ divider! (5V→3.3V)</div></span><span style="color:#f0a500;font-size:11px">PB10→PB8</span><span><span class="itype igpio">GPIO IN</span></span></div>
+  <div class="pin-row"><span class="dlabel d-free">D5</span><span><div class="comp-name">— not used —</div></span><span style="color:#3a5070;font-size:11px">PB4</span><span><span class="itype igpio">free</span></span></div>
+</div>
+
+<div class="board">
+  <div class="board-title e1t">🔵 ECU #1 — CN5 (Left Header — Digital) + CN6 (Bottom — Analog)</div>
+  <div class="header-row"><span>BOARD LABEL</span><span>CONNECT TO</span><span>STM32</span><span>TYPE</span></div>
+  <div class="pin-row"><span class="dlabel d-used">D15</span><span><div class="comp-name">Push Button 3 (Headlight toggle)</div><div class="comp-note">Button → D15, other end → GND</div></span><span style="color:#f0a500;font-size:11px">PB8→PB5</span><span><span class="itype igpio">GPIO PU</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D14</span><span><div class="comp-name">Push Button 2 (Parking toggle)</div><div class="comp-note">Button → D14, other end → GND</div></span><span style="color:#f0a500;font-size:11px">PB4</span><span><span class="itype igpio">GPIO PU</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D13</span><span><div class="comp-name">Push Button 1 (Fwd/Rev toggle)</div><div class="comp-note">Button → D13, other end → GND</div></span><span style="color:#f0a500;font-size:11px">PB3</span><span><span class="itype igpio">GPIO PU</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D7 (CN10)</span><span><div class="comp-name">IR Receiver TSOP OUT</div><div class="comp-note">PA8 — IRremote library pin</div></span><span style="color:#f0a500;font-size:11px">PA8</span><span><span class="itype iir">IR INPUT</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">A0</span><span><div class="comp-name">Joystick1 VRx (Steering L/R)</div><div class="comp-note">Centre of joystick pot</div></span><span style="color:#f0a500;font-size:11px">PA0</span><span><span class="itype iadc">ADC</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">A1</span><span><div class="comp-name">Joystick2 VRx (Accel/Brake F/B)</div><div class="comp-note">Centre of joystick pot</div></span><span style="color:#f0a500;font-size:11px">PA1</span><span><span class="itype iadc">ADC</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">A2</span><span><div class="comp-name">Joystick1 SW (Horn button)</div><div class="comp-note">SW pin → A2 (PA4), other → GND</div></span><span style="color:#f0a500;font-size:11px">PA4</span><span><span class="itype igpio">GPIO PU</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">A3</span><span><div class="comp-name">Potentiometer wiper (centre pin)</div><div class="comp-note">Left→GND, Centre→A3, Right→3.3V</div></span><span style="color:#f0a500;font-size:11px">PB0</span><span><span class="itype iadc">ADC</span></span></div>
+</div>
+</div>
+
+<div class="warn">
+  <strong>⚠ Ultrasonic ECHO voltage divider (REQUIRED on ECU1):</strong><br>
+  HC-SR04 ECHO pin outputs 5V. STM32F401RE GPIO is 3.3V max.<br>
+  <strong>Wire:</strong> HC-SR04 ECHO → 1kΩ resistor → PB8 (board pin) → 2kΩ resistor → GND<br>
+  This gives: 5V × (2k÷3k) = 3.33V ≈ safe for STM32
+</div>
+
+<!-- ── ECU1 EXACT PIN LOOKUP TABLE ── -->
+<div class="sh"><span class="sn">03</span><h2>ECU #1 — Complete Physical Pin Lookup</h2><div class="div"></div></div>
+<table class="iotable">
+  <tr><th>Component</th><th>Board Label</th><th>Header / Position</th><th>STM32 Pin</th><th>Wire Colour Suggestion</th></tr>
+  <tr><td>UART TX → ECU2</td><td><strong style="color:#ff4e6a">D8</strong></td><td>CN10, pin 21</td><td>PA9</td><td style="color:#f87171">RED</td></tr>
+  <tr><td>UART RX ← ECU2</td><td><strong style="color:#ff4e6a">D2</strong></td><td>CN10, pin 35</td><td>PA10</td><td style="color:#f87171">ORANGE</td></tr>
+  <tr><td>GND (to ECU2 GND)</td><td><strong>GND</strong></td><td>CN6 or CN7</td><td>GND</td><td style="color:#888">BLACK</td></tr>
+  <tr><td>Joystick1 VRx (Steering)</td><td><strong>A0</strong></td><td>CN6, pin 1</td><td>PA0</td><td style="color:#60a5fa">BLUE</td></tr>
+  <tr><td>Joystick2 VRx (Accel/Brake)</td><td><strong>A1</strong></td><td>CN6, pin 2</td><td>PA1</td><td style="color:#34d399">GREEN</td></tr>
+  <tr><td>Joystick1 SW (Horn)</td><td><strong>A2</strong></td><td>CN6, pin 3</td><td>PA4</td><td style="color:#fbbf24">YELLOW</td></tr>
+  <tr><td>Potentiometer (Wiper)</td><td><strong>A3</strong></td><td>CN6, pin 4</td><td>PB0</td><td style="color:#a78bfa">PURPLE</td></tr>
+  <tr><td>IR Receiver OUT</td><td><strong>D7</strong></td><td>CN10, pin 23 (PA8)</td><td>PA8</td><td style="color:#f472b6">PINK</td></tr>
+  <tr><td>Ultrasonic TRIG</td><td><strong>D6</strong></td><td>CN10, pin 17 (PB10)</td><td>PB10</td><td style="color:#fbbf24">YELLOW</td></tr>
+  <tr><td>Ultrasonic ECHO (via divider)</td><td><strong>D5</strong></td><td>CN10, pin 13 (PB4→use PB8)</td><td>PB8</td><td style="color:#34d399">GREEN</td></tr>
+  <tr><td>Push Button 1 (Fwd/Rev)</td><td><strong>D3</strong></td><td>CN10, pin 31 (PB3)</td><td>PB3</td><td style="color:#888">GREY</td></tr>
+  <tr><td>Push Button 2 (Parking)</td><td><strong>D4</strong></td><td>CN10, pin 29 (PB5)</td><td>PB4 → use this header</td><td style="color:#60a5fa">BLUE</td></tr>
+  <tr><td>Push Button 3 (Headlight)</td><td><strong>D5</strong></td><td>CN10, pin 27 (PB4)</td><td>PB5</td><td style="color:#34d399">GREEN</td></tr>
+  <tr><td>VCC for sensors</td><td><strong>3V3</strong></td><td>CN6, pin 4 or CN7</td><td>3.3V</td><td style="color:#ff4e6a">RED</td></tr>
+  <tr><td>GND for sensors</td><td><strong>GND</strong></td><td>CN6 multiple or CN7</td><td>GND</td><td style="color:#888">BLACK</td></tr>
+</table>
+
+<!-- ═══ ECU2 BOARD MAP ═══ -->
+<div class="sh"><span class="sn">04</span><h2>ECU #2 — Actuator System — All Pin Connections</h2><div class="div"></div></div>
+
+<div class="board-wrap">
+<div class="board">
+  <div class="board-title e2t">🟢 ECU #2 — CN10 (Right Header)</div>
+  <div class="header-row"><span>BOARD LABEL</span><span>CONNECT TO</span><span>STM32</span><span>TYPE</span></div>
+  <div class="pin-row"><span class="dlabel d-uart">D8</span><span><div class="comp-name">→ ECU1 D2 (UART TX out)</div></span><span style="color:#f0a500;font-size:11px">PA9</span><span><span class="itype iuart">UART TX</span></span></div>
+  <div class="pin-row"><span class="dlabel d-uart">D2</span><span><div class="comp-name">← ECU1 D8 (UART RX in)</div></span><span style="color:#f0a500;font-size:11px">PA10</span><span><span class="itype iuart">UART RX</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D9</span><span><div class="comp-name">TM1637 Speed CLK</div></span><span style="color:#f0a500;font-size:11px">PC7</span><span><span class="itype igpio">bit-bang</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D12</span><span><div class="comp-name">TM1637 Speed+RPM shared DIO</div></span><span style="color:#f0a500;font-size:11px">PA11</span><span><span class="itype igpio">bit-bang</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D13</span><span><div class="comp-name">TM1637 RPM CLK</div></span><span style="color:#f0a500;font-size:11px">PA12 (note: also SPI CLK)</span><span><span class="itype igpio">bit-bang</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D7</span><span><div class="comp-name">Buzzer Horn (tone 1kHz)</div></span><span style="color:#f0a500;font-size:11px">PA8</span><span><span class="itype igpio">GPIO OUT</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D11</span><span><div class="comp-name">Buzzer Indicator (tone 800Hz)</div></span><span style="color:#f0a500;font-size:11px">PC6 (check morph)</span><span><span class="itype igpio">GPIO OUT</span></span></div>
+</div>
+
+<div class="board">
+  <div class="board-title e2t">🟢 ECU #2 — CN5 (Left Header) + CN6 Analog</div>
+  <div class="header-row"><span>BOARD LABEL</span><span>CONNECT TO</span><span>STM32</span><span>TYPE</span></div>
+  <div class="pin-row"><span class="dlabel d-used">D11</span><span><div class="comp-name">Servo1 Steering signal</div></span><span style="color:#f0a500;font-size:11px">PA0 → use A0</span><span><span class="itype ipwm">PWM</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">A1</span><span><div class="comp-name">Servo2 Wiper signal</div></span><span style="color:#f0a500;font-size:11px">PA1</span><span><span class="itype ipwm">PWM</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D5</span><span><div class="comp-name">L298N ENA (Motor A speed)</div></span><span style="color:#f0a500;font-size:11px">PA15 (D9 alt)</span><span><span class="itype ipwm">PWM</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D3</span><span><div class="comp-name">L298N ENB (Motor B speed)</div></span><span style="color:#f0a500;font-size:11px">PB3</span><span><span class="itype ipwm">PWM</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D4</span><span><div class="comp-name">L298N IN1</div></span><span style="color:#f0a500;font-size:11px">PB5→PA5</span><span><span class="itype igpio">GPIO</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D12</span><span><div class="comp-name">L298N IN2</div></span><span style="color:#f0a500;font-size:11px">PA6</span><span><span class="itype igpio">GPIO</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">D11</span><span><div class="comp-name">L298N IN3</div></span><span style="color:#f0a500;font-size:11px">PA7</span><span><span class="itype igpio">GPIO</span></span></div>
+  <div class="pin-row"><span class="dlabel d-used">A3</span><span><div class="comp-name">L298N IN4</div></span><span style="color:#f0a500;font-size:11px">PB0</span><span><span class="itype igpio">GPIO</span></span></div>
+</div>
+</div>
+
+<!-- ── ECU2 DEFINITIVE TABLE ── -->
+<div class="sh"><span class="sn">05</span><h2>ECU #2 — Complete Physical Pin Lookup</h2><div class="div"></div></div>
+<table class="iotable">
+  <tr><th>Component</th><th>Board Label</th><th>STM32 Pin</th><th>Notes</th></tr>
+  <tr><td>UART RX ← ECU1</td><td><strong style="color:#ff4e6a">D2</strong></td><td>PA10</td><td>CN10 header, cross-wire from ECU1 D8</td></tr>
+  <tr><td>UART TX → ECU1</td><td><strong style="color:#ff4e6a">D8</strong></td><td>PA9</td><td>CN10 header, cross-wire to ECU1 D2</td></tr>
+  <tr><td>GND (to ECU1 GND)</td><td><strong>GND</strong></td><td>GND</td><td>CN6 or CN7 any GND pin</td></tr>
+  <tr><td>Servo1 Steering signal</td><td><strong>A0</strong></td><td>PA0</td><td>CN6 pin 1. Servo VCC→5V, GND→GND</td></tr>
+  <tr><td>Servo2 Wiper signal</td><td><strong>A1</strong></td><td>PA1</td><td>CN6 pin 2</td></tr>
+  <tr><td>L298N IN1 (Motor A fwd)</td><td><strong>D4</strong></td><td>PA5</td><td>CN10</td></tr>
+  <tr><td>L298N IN2 (Motor A rev)</td><td><strong>D12</strong></td><td>PA6</td><td>CN10</td></tr>
+  <tr><td>L298N IN3 (Motor B fwd)</td><td><strong>D11</strong></td><td>PA7</td><td>CN10</td></tr>
+  <tr><td>L298N IN4 (Motor B rev)</td><td><strong>A3</strong></td><td>PB0</td><td>CN6 pin 4</td></tr>
+  <tr><td>L298N ENA (Motor A speed PWM)</td><td><strong>D9</strong></td><td>PA15</td><td>CN10 — confirmed PWM on F401</td></tr>
+  <tr><td>L298N ENB (Motor B speed PWM)</td><td><strong>D3</strong></td><td>PB3</td><td>CN10 — confirmed PWM on F401</td></tr>
+  <tr><td>Buzzer Horn</td><td><strong>D7</strong></td><td>PA8</td><td>CN10</td></tr>
+  <tr><td>Buzzer Indicator</td><td><strong>D10</strong></td><td>PC6 → use D10 morphed</td><td>CN10</td></tr>
+  <tr><td>Left Indicator LED</td><td><strong>A4</strong></td><td>PC0 → use this</td><td>CN6 → 330Ω → LED → GND</td></tr>
+  <tr><td>Right Indicator LED</td><td><strong>A5</strong></td><td>PC1</td><td>CN6 → 330Ω → LED → GND</td></tr>
+  <tr><td>Brake LED (PWM)</td><td><strong>D6</strong></td><td>PC2 → analogWrite</td><td>220Ω → LED → GND</td></tr>
+  <tr><td>Headlight Relay</td><td><strong>D5</strong></td><td>PC3</td><td>CN10 → relay module IN</td></tr>
+  <tr><td>TM1637 Speed CLK</td><td><strong>D9</strong></td><td>PC7</td><td>CN10</td></tr>
+  <tr><td>TM1637 Speed+RPM DIO (shared)</td><td><strong>D6 (alt)</strong></td><td>PA11</td><td>CN10</td></tr>
+  <tr><td>TM1637 RPM CLK</td><td><strong>D13</strong></td><td>PA12</td><td>CN10 (not used for SPI here)</td></tr>
+  <tr><td>LED Bar Parking × 6</td><td><strong>PC4,PC5,PC8–PC11</strong></td><td>PC4–PC11</td><td>330Ω per LED. Use morphed pins or direct STM32 header</td></tr>
+</table>
+
+<!-- ═══ COMPONENT WIRING ═══ -->
+<div class="sh"><span class="sn">06</span><h2>Step-by-Step Component Wiring</h2><div class="div"></div></div>
+<div class="wgrid">
+
+  <div class="wcard">
+    <div class="wch"><span>🔌</span><span class="wct">L298N Motor Driver → ECU2</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">12V pin</span><span class="warr">←</span><span class="wto">12V battery positive</span></div>
+      <div class="ws"><span class="wfrom">GND pin</span><span class="warr">←</span><span class="wto">Battery GND + STM32 GND (shared)</span></div>
+      <div class="ws"><span class="wfrom">ENA pin</span><span class="warr">←</span><span class="wto">ECU2 D9 (PA15) — PWM speed A</span></div>
+      <div class="ws"><span class="wfrom">IN1 pin</span><span class="warr">←</span><span class="wto">ECU2 D4 (PA5)</span></div>
+      <div class="ws"><span class="wfrom">IN2 pin</span><span class="warr">←</span><span class="wto">ECU2 D12 (PA6)</span></div>
+      <div class="ws"><span class="wfrom">ENB pin</span><span class="warr">←</span><span class="wto">ECU2 D3 (PB3) — PWM speed B</span></div>
+      <div class="ws"><span class="wfrom">IN3 pin</span><span class="warr">←</span><span class="wto">ECU2 D11 (PA7)</span></div>
+      <div class="ws"><span class="wfrom">IN4 pin</span><span class="warr">←</span><span class="wto">ECU2 A3 (PB0)</span></div>
+      <div class="ws"><span class="wfrom">OUT1/OUT2</span><span class="warr">→</span><span class="wto">Motor 1 (rear left wheel)</span></div>
+      <div class="ws"><span class="wfrom">OUT3/OUT4</span><span class="warr">→</span><span class="wto">Motor 2 (rear right wheel)</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>⚙️</span><span class="wct">Servo Motors → ECU2</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">Servo1 Signal</span><span class="warr">←</span><span class="wto">ECU2 A0 (PA0) — Steering</span></div>
+      <div class="ws"><span class="wfrom">Servo1 VCC</span><span class="warr">←</span><span class="wto">5V external supply</span></div>
+      <div class="ws"><span class="wfrom">Servo1 GND</span><span class="warr">←</span><span class="wto">GND (shared)</span></div>
+      <div class="ws"><span class="wfrom">Servo2 Signal</span><span class="warr">←</span><span class="wto">ECU2 A1 (PA1) — Wiper</span></div>
+      <div class="ws"><span class="wfrom">Servo2 VCC</span><span class="warr">←</span><span class="wto">5V external supply</span></div>
+      <div class="ws"><span class="wfrom">Servo2 GND</span><span class="warr">←</span><span class="wto">GND (shared)</span></div>
+      <div class="ws"><span class="wfrom">Note</span><span class="warr">→</span><span class="wto">Never power servos from STM32 5V pin — use external 5V/1A supply</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>📻</span><span class="wct">IR Receiver TSOP1738 → ECU1</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">Pin 1 (OUT)</span><span class="warr">→</span><span class="wto">ECU1 D7 (PA8)</span></div>
+      <div class="ws"><span class="wfrom">Pin 2 (GND)</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Pin 3 (VCC)</span><span class="warr">→</span><span class="wto">3.3V + 100µF cap across VCC-GND</span></div>
+      <div class="ws"><span class="wfrom">First run</span><span class="warr">→</span><span class="wto">Open ECU1 Serial Monitor, press RED/GREEN buttons, note hex codes printed, update IR_CODE_LOCK and IR_CODE_UNLOCK in ECU1 sketch</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>📡</span><span class="wct">HC-SR04 Ultrasonic → ECU1</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">VCC</span><span class="warr">→</span><span class="wto">5V pin on Nucleo</span></div>
+      <div class="ws"><span class="wfrom">GND</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">TRIG</span><span class="warr">→</span><span class="wto">ECU1 D6 (PB10) — direct wire</span></div>
+      <div class="ws"><span class="wfrom">ECHO</span><span class="warr">→</span><span class="wto">1kΩ → ECU1 D5 (PB8) → 2kΩ → GND</span></div>
+      <div class="ws"><span class="wfrom">⚠ WHY</span><span class="warr">→</span><span class="wto">ECHO = 5V output. STM32 GPIO = 3.3V max. Divider is mandatory or you will damage the MCU</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>🕹️</span><span class="wct">Joysticks (×2) → ECU1</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">Both VCC</span><span class="warr">→</span><span class="wto">3.3V on Nucleo</span></div>
+      <div class="ws"><span class="wfrom">Both GND</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Joy1 VRx</span><span class="warr">→</span><span class="wto">ECU1 A0 (PA0) — Steering</span></div>
+      <div class="ws"><span class="wfrom">Joy1 SW</span><span class="warr">→</span><span class="wto">ECU1 A2 (PA4) — Horn (other end GND)</span></div>
+      <div class="ws"><span class="wfrom">Joy2 VRx</span><span class="warr">→</span><span class="wto">ECU1 A1 (PA1) — Accel/Brake</span></div>
+      <div class="ws"><span class="wfrom">Pot wiper</span><span class="warr">→</span><span class="wto">ECU1 A3 (PB0) — Wiper speed</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>🔲</span><span class="wct">Push Buttons (×3) → ECU1</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">BTN1 pin A</span><span class="warr">→</span><span class="wto">ECU1 D3 (PB3) — Fwd/Rev</span></div>
+      <div class="ws"><span class="wfrom">BTN1 pin B</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">BTN2 pin A</span><span class="warr">→</span><span class="wto">ECU1 D4 (PB4) — Parking</span></div>
+      <div class="ws"><span class="wfrom">BTN2 pin B</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">BTN3 pin A</span><span class="warr">→</span><span class="wto">ECU1 D5 (PB5) — Headlight</span></div>
+      <div class="ws"><span class="wfrom">BTN3 pin B</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">No resistor</span><span class="warr">→</span><span class="wto">INPUT_PULLUP used in code — no external resistor needed</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>🔢</span><span class="wct">TM1637 7-Seg Displays (×2) → ECU2</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">Spd CLK</span><span class="warr">→</span><span class="wto">ECU2 D9 (PC7)</span></div>
+      <div class="ws"><span class="wfrom">Spd DIO</span><span class="warr">→</span><span class="wto">ECU2 D6 (PA11) — shared</span></div>
+      <div class="ws"><span class="wfrom">RPM CLK</span><span class="warr">→</span><span class="wto">ECU2 D13 (PA12)</span></div>
+      <div class="ws"><span class="wfrom">RPM DIO</span><span class="warr">→</span><span class="wto">ECU2 D6 (PA11) — same shared wire</span></div>
+      <div class="ws"><span class="wfrom">Both VCC</span><span class="warr">→</span><span class="wto">3.3V or 5V</span></div>
+      <div class="ws"><span class="wfrom">Both GND</span><span class="warr">→</span><span class="wto">GND</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>🟡</span><span class="wct">LED Bar Graph (Parking, 6 LEDs) → ECU2</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">LED 1 anode</span><span class="warr">←</span><span class="wto">330Ω ← PC4 (use Morpho header)</span></div>
+      <div class="ws"><span class="wfrom">LED 2 anode</span><span class="warr">←</span><span class="wto">330Ω ← PC5</span></div>
+      <div class="ws"><span class="wfrom">LED 3 anode</span><span class="warr">←</span><span class="wto">330Ω ← PC8</span></div>
+      <div class="ws"><span class="wfrom">LED 4 anode</span><span class="warr">←</span><span class="wto">330Ω ← PC9</span></div>
+      <div class="ws"><span class="wfrom">LED 5 anode</span><span class="warr">←</span><span class="wto">330Ω ← PC10</span></div>
+      <div class="ws"><span class="wfrom">LED 6 anode</span><span class="warr">←</span><span class="wto">330Ω ← PC11</span></div>
+      <div class="ws"><span class="wfrom">All cathodes</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Note</span><span class="warr">→</span><span class="wto">PC4–PC11 are on the MORPHO connector (inner rows CN7/CN10) — use female-to-male jumpers</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>💡</span><span class="wct">Brake LED + Headlight Relay → ECU2</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">Brake LED+</span><span class="warr">←</span><span class="wto">220Ω ← ECU2 D6 (PC2) — PWM dims it</span></div>
+      <div class="ws"><span class="wfrom">Brake LED-</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Relay IN</span><span class="warr">←</span><span class="wto">ECU2 D5 (PC3)</span></div>
+      <div class="ws"><span class="wfrom">Relay VCC</span><span class="warr">←</span><span class="wto">5V</span></div>
+      <div class="ws"><span class="wfrom">Relay GND</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Relay COM</span><span class="warr">←</span><span class="wto">12V Battery+</span></div>
+      <div class="ws"><span class="wfrom">Relay NO</span><span class="warr">→</span><span class="wto">Headlight bulb +</span></div>
+      <div class="ws"><span class="wfrom">Bulb -</span><span class="warr">→</span><span class="wto">GND (battery -)</span></div>
+    </div>
+  </div>
+
+  <div class="wcard">
+    <div class="wch"><span>🔊</span><span class="wct">Buzzers (×2) → ECU2</span></div>
+    <div class="wcb">
+      <div class="ws"><span class="wfrom">Horn BUZ+</span><span class="warr">←</span><span class="wto">ECU2 D7 (PA8)</span></div>
+      <div class="ws"><span class="wfrom">Horn BUZ-</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Indic BUZ+</span><span class="warr">←</span><span class="wto">ECU2 D10 (PC6 morpho)</span></div>
+      <div class="ws"><span class="wfrom">Indic BUZ-</span><span class="warr">→</span><span class="wto">GND</span></div>
+      <div class="ws"><span class="wfrom">Type</span><span class="warr">→</span><span class="wto">Must be PASSIVE buzzers (not active) — tone() needs passive type</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sh"><span class="sn">07</span><h2>Libraries to Install in Arduino IDE</h2><div class="div"></div></div>
+<table class="iotable">
+  <tr><th>Library</th><th>How to Install</th><th>Used For</th></tr>
+  <tr><td><strong>IRremote</strong> by shirriff / z3t0</td><td>Arduino IDE → Tools → Manage Libraries → search "IRremote"</td><td>ECU1 — IR remote decode (NEC protocol)</td></tr>
+  <tr><td><strong>TM1637Display</strong> by Avishay Orpaz</td><td>Arduino IDE → Tools → Manage Libraries → search "TM1637"</td><td>ECU2 — 7-segment speed/RPM displays</td></tr>
+  <tr><td><strong>Servo</strong> (built-in)</td><td>Included in STM32duino core — no install needed</td><td>ECU2 — steering + wiper servos</td></tr>
+  <tr><td><strong>STM32duino core</strong></td><td>Arduino → Preferences → add URL: https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json → Boards Manager → install "STM32 MCU based boards"</td><td>Board support for NUCLEO-F401RE</td></tr>
+</table>
+<div class="warn" style="margin-top:14px">
+  <strong>Arduino IDE Board Settings:</strong> Tools → Board → STM32 MCU based boards → Nucleo-64 → Board Part Number: "Nucleo F401RE" → Upload method: STM32CubeProgrammer (SWD) or Mass Storage
+</div>
+
+</main>
+<footer>NUCLEO-F401RE × 2 · UART TX=PA9(D8) ↔ RX=PA10(D2) · GND–GND · 57600 baud · IRremote v3 · TM1637</footer>
+</body>
+</html>
