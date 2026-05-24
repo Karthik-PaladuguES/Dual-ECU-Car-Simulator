@@ -1,0 +1,12 @@
+# Arduino Compiled Output Files
+*.elf
+*.o
+*.a
+*.bin
+*.hex
+*.eep
+*.d
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
