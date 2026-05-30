@@ -58,6 +58,3 @@ Communication is handled via a custom 14-byte packet to ensure data integrity:
 * `B2`: Direction (0=Stop, 1=Fwd, 2=Rev)
 * `B3-B10`: Brakes, Horn, Indicators, Wipers, Lighting, Lock state, and ABS intervention.
 * `CHK`: XOR Checksum of the payload.
-
-## 👨‍💻 Author
-*B V Raju Institute of Technology (BVRIT)*
