@@ -60,4 +60,4 @@ Communication is handled via a custom 14-byte packet to ensure data integrity:
 * `CHK`: XOR Checksum of the payload.
 
 ## 👨‍💻 Author
-**Karthik Paladugu** *B V Raju Institute of Technology (BVRIT)*
+*B V Raju Institute of Technology (BVRIT)*
